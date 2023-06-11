@@ -34,8 +34,8 @@ def draw_bounding_box(image, bbox, label):
 with open(image_path, 'rb') as image_file:
     response = client.detect_labels(
         Image={'Bytes': image_file.read()},
-        MaxLabels=5,
-        MinConfidence=90
+        MaxLabels=8,
+        MinConfidence=70
     )
 
 # 레이블 정보 추출 및 바운딩 박스 그리기
