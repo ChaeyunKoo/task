@@ -1,0 +1,21 @@
+import boto3
+import pprint
+
+client = boto3.client(
+    "rekognition",
+    aws_access_key_id="AKIA3KD6RYMM7VF7VCHC",
+    aws_secret_access_key="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",
+    region_name="ap-northeast-2"
+)
+response = client.detect_labels(
+    Image={
+        'S3Object': {
+            'Bucket': 'choigod',
+            'Name': 'juan-ordonez-lVpafFS9Vp0-unsplash.jpg'
+        }
+    },
+    MaxLabels=5,
+    MinConfidence=90
+)
+
+pprint.pprint(response)
