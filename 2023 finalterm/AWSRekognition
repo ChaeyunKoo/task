@@ -1,12 +1,33 @@
+import cv2
+import numpy as np
 import boto3
 import pprint
 
+# AWS Rekognition 설정
 client = boto3.client(
     "rekognition",
     aws_access_key_id="AKIA3KD6RYMM7VF7VCHC",
     aws_secret_access_key="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",
     region_name="ap-northeast-2"
 )
+
+# 이미지 파일 경로
+image_path = r'C:\Users\kcy\Downloads\juan-ordonez-lVpafFS9Vp0-unsplash.jpg'
+
+# 이미지 로드
+image = cv2.imread(image_path)
+
+# 바운딩 박스 그리기
+def draw_bounding_box(image, bbox, label):
+    height, width, _ = image.shape
+    x = int(bbox['Left'] * width)
+    y = int(bbox['Top'] * height)
+    w = int(bbox['Width'] * width)
+    h = int(bbox['Height'] * height)
+    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    cv2.putText(image, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
+# AWS Rekognition으로 이미지 분석
 response = client.detect_labels(
     Image={
         'S3Object': {
@@ -18,4 +39,18 @@ response = client.detect_labels(
     MinConfidence=90
 )
 
+# 레이블 정보 추출 및 바운딩 박스 그리기
+labels = response['Labels']
+for label in labels:
+    instances = label['Instances']
+    for instance in instances:
+        bbox = instance['BoundingBox']
+        draw_bounding_box(image, bbox, label['Name'])
+
+# 이미지 출력
+cv2.imshow('Image', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# 결과 출력
 pprint.pprint(response)
