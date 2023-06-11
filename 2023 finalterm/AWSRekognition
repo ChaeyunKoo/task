@@ -1,6 +1,9 @@
+#사진 풀사이즈 출력!!!!
 import cv2
 import boto3
 import pprint
+import tempfile
+import webbrowser
 
 # AWS Rekognition 설정
 client = boto3.client(
@@ -43,11 +46,12 @@ for label in labels:
         bbox = instance['BoundingBox']
         draw_bounding_box(image, bbox, label['Name'])
 
-# 이미지 출력
-cv2.namedWindow('Image', cv2.WINDOW_NORMAL)
-cv2.imshow('Image', image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# 이미지를 임시 파일로 저장
+temp_image_path = tempfile.mktemp(suffix='.jpg')
+cv2.imwrite(temp_image_path, image)
+
+# 외부 이미지 뷰어로 이미지 열기
+webbrowser.open(temp_image_path)
 
 # 결과 출력
 pprint.pprint(response)
